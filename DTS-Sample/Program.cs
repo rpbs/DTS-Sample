@@ -34,38 +34,38 @@ const string PortugueseAgentInstructions = """
     You are a helpful assistant that translates English to Portuguese. You will be given a sentence in English, and you will respond with the translation in Portuguese.
 """;
 
-const string GermanAgentInstructions = """
-    You are a helpful assistant that translates English to German. You will be given a sentence in English, and you will respond with the translation in German.
+const string SpanishAgentInstructions = """
+    You are a helpful assistant that translates English to Spanish. You will be given a sentence in English, and you will respond with the translation in Spanish.
 """;
 
-const string NorwegianAgentInstructions = """
-    You are a helpful assistant that translates English to Norwegian. You will be given a sentence in English, and you will respond with the translation in Norwegian.
+const string ItalianAgentInstructions = """
+    You are a helpful assistant that translates English to Italian. You will be given a sentence in English, and you will respond with the translation in Italian.
 """;
 
 AIAgent portugueseAgent = client.GetChatClient(deploymentName).AsAIAgent(PortugueseAgentInstructions, "Portuguese Agent");
-AIAgent germanAgent = client.GetChatClient(deploymentName).AsAIAgent(GermanAgentInstructions, "German Agent");
-AIAgent norwegianAgent = client.GetChatClient(deploymentName).AsAIAgent(NorwegianAgentInstructions, "Norwegian Agent");
+AIAgent spanishAgent = client.GetChatClient(deploymentName).AsAIAgent(SpanishAgentInstructions, "Spanish Agent");
+AIAgent italianAgent = client.GetChatClient(deploymentName).AsAIAgent(ItalianAgentInstructions, "Italian Agent");
 
 // 
 static async Task<string> RunOrchestratorAsync(TaskOrchestrationContext context, string input)
 {
 
     DurableAIAgent portugueseAgentInstance = context.GetAgent("Portuguese Agent");
-    DurableAIAgent germanAgentInstance = context.GetAgent("German Agent");
-    DurableAIAgent norwegianAgentInstance = context.GetAgent("Norwegian Agent");
+    DurableAIAgent spanishAgentInstance = context.GetAgent("Spanish Agent");
+    DurableAIAgent italianAgentInstance = context.GetAgent("Italian Agent");
 
     Task<AgentResponse> portugueseResult = portugueseAgentInstance.RunAsync(input);
-    Task<AgentResponse> germanResult = germanAgentInstance.RunAsync(input);
-    Task<AgentResponse> norwegianResult = norwegianAgentInstance.RunAsync(input);
+    Task<AgentResponse> spanishResult = spanishAgentInstance.RunAsync(input);
+    Task<AgentResponse> italianResult = italianAgentInstance.RunAsync(input);
 
-    await Task.WhenAll(portugueseResult, germanResult, norwegianResult);
+    await Task.WhenAll(portugueseResult, spanishResult, italianResult);
 
     AgentResponse ptTranslation = await portugueseResult;
-    AgentResponse deTranslation = await germanResult;
-    AgentResponse noTranslation = await norwegianResult;
+    AgentResponse esTranslation = await spanishResult;
+    AgentResponse itTranslation = await italianResult;
 
 
-    string finalResult = $"Original: {input}\nPortuguese: {ptTranslation.Text}\nGerman: {deTranslation.Text}\nNorwegian: {noTranslation.Text}";
+    string finalResult = $"Original: {input}\nPortuguese: {ptTranslation.Text}\nSpanish: {esTranslation.Text}\nItalian: {itTranslation.Text}";
 
     return finalResult;
 }
@@ -80,8 +80,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             {
                 options
                     .AddAIAgent(portugueseAgent)
-                    .AddAIAgent(germanAgent)
-                    .AddAIAgent(norwegianAgent);
+                    .AddAIAgent(spanishAgent)
+                    .AddAIAgent(italianAgent);
             },
             workerBuilder: builder =>
             {
