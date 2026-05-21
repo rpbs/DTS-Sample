@@ -57,7 +57,7 @@ static async Task<string> RunOrchestratorAsync(TaskOrchestrationContext context,
     Task<AgentResponse> portugueseResult = portugueseAgentInstance.RunAsync(input);
     Task<AgentResponse> spanishResult = spanishAgentInstance.RunAsync(input);
     Task<AgentResponse> italianResult = italianAgentInstance.RunAsync(input);
-
+    
     await Task.WhenAll(portugueseResult, spanishResult, italianResult);
 
     AgentResponse ptTranslation = await portugueseResult;
@@ -65,7 +65,7 @@ static async Task<string> RunOrchestratorAsync(TaskOrchestrationContext context,
     AgentResponse itTranslation = await italianResult;
 
 
-    string finalResult = $"Original: {input}\nPortuguese: {ptTranslation.Text}\nSpanish: {esTranslation.Text}\nItalian: {itTranslation.Text}";
+    string finalResult = $"Original: {input}\n\nPortuguese: {ptTranslation}\n\nSpanish: {esTranslation}\n\nItalian: {itTranslation}";
 
     return finalResult;
 }
