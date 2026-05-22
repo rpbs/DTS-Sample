@@ -99,6 +99,7 @@ await host.StartAsync();
 
 DurableTaskClient durableTaskClient = host.Services.GetRequiredService<DurableTaskClient>();
 
+Console.WriteLine("Digite algo em inglês \n");
 
 while (true)
 {
