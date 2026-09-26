@@ -42,9 +42,15 @@ const string ItalianAgentInstructions = """
     You are a helpful assistant that translates English to Italian. You will be given a sentence in English, and you will respond with the translation in Italian.
 """;
 
+const string ChineseAgentInstructions = """
+    You are a helpful assistant that translates English to Chinese. You will be given a sentence in English, and you will respond with the translation in Chinese.
+""";
+
 AIAgent portugueseAgent = client.GetChatClient(deploymentName).AsAIAgent(PortugueseAgentInstructions, "Portuguese Agent");
 AIAgent spanishAgent = client.GetChatClient(deploymentName).AsAIAgent(SpanishAgentInstructions, "Spanish Agent");
 AIAgent italianAgent = client.GetChatClient(deploymentName).AsAIAgent(ItalianAgentInstructions, "Italian Agent");
+AIAgent chineseAgent = client.GetChatClient(deploymentName).AsAIAgent(ChineseAgentInstructions, "Chinese Agent");
+
 
 // 
 static async Task<string> RunOrchestratorAsync(TaskOrchestrationContext context, string input)
@@ -53,19 +59,22 @@ static async Task<string> RunOrchestratorAsync(TaskOrchestrationContext context,
     DurableAIAgent portugueseAgentInstance = context.GetAgent("Portuguese Agent");
     DurableAIAgent spanishAgentInstance = context.GetAgent("Spanish Agent");
     DurableAIAgent italianAgentInstance = context.GetAgent("Italian Agent");
+    DurableAIAgent chineseAgentInstance = context.GetAgent("Chinese Agent");
 
     Task<AgentResponse> portugueseResult = portugueseAgentInstance.RunAsync(input);
     Task<AgentResponse> spanishResult = spanishAgentInstance.RunAsync(input);
     Task<AgentResponse> italianResult = italianAgentInstance.RunAsync(input);
-    
-    await Task.WhenAll(portugueseResult, spanishResult, italianResult);
+    Task<AgentResponse> chineseResult = chineseAgentInstance.RunAsync(input);
+
+    await Task.WhenAll(portugueseResult, spanishResult, italianResult, chineseResult);
 
     AgentResponse ptTranslation = await portugueseResult;
     AgentResponse esTranslation = await spanishResult;
     AgentResponse itTranslation = await italianResult;
+    AgentResponse chTranslation = await chineseResult;
 
 
-    string finalResult = $"Original: {input}\n\nPortuguese: {ptTranslation}\n\nSpanish: {esTranslation}\n\nItalian: {itTranslation}";
+    string finalResult = $"Original: {input}\n\nPortuguese: {ptTranslation}\n\nSpanish: {esTranslation}\n\nItalian: {itTranslation}\n\nChinese: {chTranslation}";
 
     return finalResult;
 }
@@ -81,6 +90,7 @@ IHost host = Host.CreateDefaultBuilder(args)
                 options
                     .AddAIAgent(portugueseAgent)
                     .AddAIAgent(spanishAgent)
+                    .AddAIAgent(chineseAgent)
                     .AddAIAgent(italianAgent);
             },
             workerBuilder: builder =>
